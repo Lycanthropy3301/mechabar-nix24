@@ -76,11 +76,29 @@ rec {
       '';
     };
     
-    color = mkOption {
-      type = types.ints.u8;
-      default = 233;
+    colors = mkOption {
+      type = types.attrs;
+      default = {};
+      example = literalExpression ''
+        {
+          black = "#000000";
+        }
+      '';
       description = ''
-        The hue value of the primary color of the bar
+        An attrset of defined colors for use in the theme
+      '';
+    };
+
+    themeColors = mkOption {
+      type = types.attrs;
+      default = {};
+      example = literalExpression ''
+        {
+          module-fg = "@text";
+        }
+      '';
+      description = ''
+        An attrset of colors applied to module types
       '';
     };
   };
@@ -107,8 +125,10 @@ rec {
       };
       
       "waybar/theme.css".text = let
-        themesrc = import ./theme.nix { mainColor = cfg.color; };
-        theme = themesrc.colors + themesrc.theme-colors;
+        themesrc = import ./theme.nix;
+        col = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.colors // cfg.colors));
+        thcol = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.theme-colors // cfg.themeColors));
+        theme = col + thcol;
       in theme;
       
       "waybar/animation.css".source = ./animation.css;
