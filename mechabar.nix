@@ -3,7 +3,7 @@ let
   cfg = config.programs.waybar.mechabar;
 in
 rec {
-  options.programs.waybar.mechabar = {
+  options.programs.waybar.mechabar = with lib; {
     enable = mkEnableOption "mechabar";
     
     modules = mkOption {
@@ -85,44 +85,46 @@ rec {
     };
   };
 
-  home.packages = with pkgs; mkIf cfg.enable [
-    bluetui
-    bluez
-    brightnessctl
-    pipewire
-    rofi-wayland
-    nerdfonts
-    wireplumber
-  ];
+  config = with lib; mkIf cfg.enable rec {
+    home.packages = with pkgs; [
+      bluetui
+      bluez
+      brightnessctl
+      pipewire
+      rofi-wayland
+      nerdfonts
+      wireplumber
+    ];
 
-  programs.waybar.enable = mkIf cfg.enable true;
+    programs.waybar.enable = true;
 
-  programs.waybar.style = ./style.css;
-  
-  xdg.configFile = mkIf cfg.enable {
-    rofi = {
-      source = ./rofi;
-      recursive = true;
-    };
+    programs.waybar.style = ./style.css;
     
-    "waybar/theme.css".source = let
-      themesrc = ./theme.nix { mainColor = cfg.programs.waybar.mechabar.color; };
-      theme = themesrc.colors + themesrc.theme-colors;
-    in theme;
-    
-    "waybar/animation.css".source = ./animation.css;
+    xdg.configFile = {
+      rofi = {
+        source = ./rofi;
+        recursive = true;
+      };
+      
+      "waybar/theme.css".text = let
+        themesrc = import ./theme.nix { mainColor = cfg.color; };
+        theme = themesrc.colors + themesrc.theme-colors;
+      in theme;
+      
+      "waybar/animation.css".source = ./animation.css;
 
-    "waybar/themes" = {
-      source = ./waybar/themes;
-      recursive = true;
-    };
-    
-    "waybar/scripts" = {
-      source = ./scripts;
-      recursive = true;
-      executable = true;
-    };
-    
-    "waybar/config.jsonc".source = lib.mkIf (!programs.waybar?settings) ./config.jsonc;
+      "waybar/themes" = {
+        source = ./themes;
+        recursive = true;
+      };
+      
+      "waybar/scripts" = {
+        source = ./scripts;
+        recursive = true;
+        executable = true;
+      };
+      
+      "waybar/config.jsonc".source = mkIf (!programs.waybar?settings) ./config.jsonc;
+      };
   };
 }
