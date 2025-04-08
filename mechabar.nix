@@ -75,6 +75,20 @@ rec {
         Modules to use in the waybar config.
       '';
     };
+
+    extraConfig = mkOption {
+      type = types.attrs;
+      default = {};
+      example = literalExpression ''
+        {
+          memory.tooltip = true;
+          "hyprland/workspaces".persistent-workspaces = {};
+        }
+      '';
+      description = ''
+        Extra configuration changes to add to the main bar
+      '';
+    };
     
     colors = mkOption {
       type = types.attrs;
@@ -101,6 +115,22 @@ rec {
         An attrset of colors applied to module types
       '';
     };
+    
+    style = mkOption {
+      type = types.path;
+      default = ./style.css;
+      description = ''
+        The style.css file to use
+      '';
+    };
+    
+    animation = mkOption {
+      type = types.path;
+      default = ./animation.css;
+      description = ''
+        The animation.css file to use
+      '';
+    };
   };
 
   config = with lib; mkIf cfg.enable rec {
@@ -116,7 +146,8 @@ rec {
 
     programs.waybar.enable = true;
 
-    programs.waybar.style = ./style.css;
+    programs.waybar.style = cfg.style;
+    programs.waybar.settings = { mainBar = import ./config.nix // cfg.modules // cfg.extraConfig; };
     
     xdg.configFile = {
       rofi = {
@@ -131,7 +162,7 @@ rec {
         theme = col + thcol;
       in theme;
       
-      "waybar/animation.css".source = ./animation.css;
+      "waybar/animation.css".source = cfg.animation;
 
       "waybar/themes" = {
         source = ./themes;
@@ -143,8 +174,6 @@ rec {
         recursive = true;
         executable = true;
       };
-      
-      "waybar/config.jsonc".source = mkIf (!programs.waybar?settings) ./config.jsonc;
-      };
+    };
   };
 }
