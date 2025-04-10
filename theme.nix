@@ -82,5 +82,5 @@
     input-bg        = "@mantle";
     select-bg       = "@overlay2";
     select-fg       = "@crust";
-  }
+  };
 }
