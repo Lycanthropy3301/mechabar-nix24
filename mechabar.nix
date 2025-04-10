@@ -78,15 +78,23 @@ rec {
 
     extraConfig = mkOption {
       type = types.attrs;
-      default = {};
+      default = {
+        mainBar."hyprland/workspaces".persistent-workspaces = {
+          "1" = "[]";
+          "2" = "[]";
+          "3" = "[]";
+          "4" = "[]";
+          "5" = "[]";
+        };
+      };
       example = literalExpression ''
         {
-          memory.tooltip = true;
-          "hyprland/workspaces".persistent-workspaces = {};
+          mainBar.memory.tooltip = true;
         }
       '';
       description = ''
-        Extra configuration changes to add to the main bar
+        Extra configuration changes to add.
+        The main bar is in the mainBar attribute set.
       '';
     };
     
@@ -160,7 +168,7 @@ rec {
     programs.waybar.enable = true;
 
     programs.waybar.style = cfg.style;
-    programs.waybar.settings = { mainBar = import ./config.nix // cfg.modules // cfg.extraConfig; };
+    programs.waybar.settings = lib.recursiveUpdate { mainBar = import ./config.nix // cfg.modules; } cfg.extraConfig;
     
     xdg.configFile = {
       rofi = {
