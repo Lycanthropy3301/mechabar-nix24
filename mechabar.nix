@@ -168,10 +168,10 @@ rec {
         recursive = true;
       };
       
-      "rofi/theme.rasi" = let
+      "rofi/theme.rasi".text = let
         themesrc = import ./theme.nix;
-        col = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.colors // cfg.colors));
-        thcol = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.rofi-theme-colors // cfg.rofiThemeColors));
+        col = "* {" + lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "${n}: ${v};") (themesrc.colors // cfg.colors)) + "}";
+        thcol = "* {" + lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "${n}: ${v};") (themesrc.rofi-theme-colors // cfg.rofiThemeColors)) + "}";
         theme = col + thcol;
       in theme;
       
