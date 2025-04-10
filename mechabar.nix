@@ -115,6 +115,19 @@ rec {
         An attrset of colors applied to module types
       '';
     };
+
+    rofiThemeColors = mkOption {
+      type = types.attrs;
+      default = {};
+      example = literalExpression ''
+        {
+          select-fg = "@text";
+        }
+      '';
+      description = ''
+        An attrset of colors applied to the rofi menus
+      '';
+    };
     
     style = mkOption {
       type = types.path;
@@ -154,6 +167,13 @@ rec {
         source = ./rofi;
         recursive = true;
       };
+      
+      "rofi/theme.rasi" = let
+        themesrc = import ./theme.nix;
+        col = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.colors // cfg.colors));
+        thcol = lib.concatStrings(lib.attrsets.mapAttrsToList (n: v: "@define-color ${n} ${v};") (themesrc.rofi-theme-colors // cfg.rofiThemeColors));
+        theme = col + thcol;
+      in theme;
       
       "waybar/theme.css".text = let
         themesrc = import ./theme.nix;

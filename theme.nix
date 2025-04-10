@@ -74,4 +74,13 @@
     critical        = "@red";
     charging        = "@text";
   };
+  
+  rofi-theme-colors = {
+    main-bg         = "@crust";
+    main-fg         = "@text";
+    main-br         = "@overlay2";
+    input-bg        = "@mantle";
+    select-bg       = "@overlay2";
+    select-fg       = "@crust";
+  }
 }
