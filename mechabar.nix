@@ -162,7 +162,7 @@ rec {
       pipewire
       rofi-wayland
       wireplumber
-    ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+    ];
 
     programs.waybar.enable = true;
 
