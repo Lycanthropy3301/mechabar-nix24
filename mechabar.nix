@@ -161,9 +161,10 @@ rec {
       brightnessctl
       pipewire
       rofi-wayland
-      nerdfonts
       wireplumber
     ];
+
+    fonts.packages = with pkgs; [] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
     programs.waybar.enable = true;
 
