@@ -160,7 +160,7 @@ rec {
       bluez
       brightnessctl
       pipewire
-      rofi-wayland
+      rofi
       wireplumber
     ];
 
